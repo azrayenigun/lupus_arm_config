@@ -2,51 +2,57 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>lupus_arm_config</name>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
   <description>
-     An automatically generated package with all the configuration and launch files for using the LupusArm with the MoveIt Motion Planning Framework
+    LupusArm MoveIt2 configuration package.
+    Supports Gazebo simulation, mock hardware, and real robot via conditional ros2_control plugins.
   </description>
-  <maintainer email="yenigunazrakumsal@gmail.com">Azra YENİGÜN</maintainer>
-
+  <maintainer email="yenigunazrakumsal@gmail.com">Azra YENIGUN</maintainer>
   <license>BSD</license>
 
-  <url type="website">http://moveit.ros.org/</url>
-  <url type="bugtracker">https://github.com/ros-planning/moveit2/issues</url>
-  <url type="repository">https://github.com/ros-planning/moveit2</url>
-
-  <author email="yenigunazrakumsal@gmail.com">Azra YENİGÜN</author>
+  <author email="yenigunazrakumsal@gmail.com">Azra YENIGUN</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <!-- Core MoveIt -->
   <exec_depend>moveit_ros_move_group</exec_depend>
   <exec_depend>moveit_kinematics</exec_depend>
   <exec_depend>moveit_planners</exec_depend>
   <exec_depend>moveit_simple_controller_manager</exec_depend>
-  <exec_depend>joint_state_publisher</exec_depend>
-  <exec_depend>joint_state_publisher_gui</exec_depend>
-  <exec_depend>tf2_ros</exec_depend>
-  <exec_depend>xacro</exec_depend>
-  <!-- The next 2 packages are required for the gazebo simulation.
-       We don't include them by default to prevent installing gazebo and all its dependencies. -->
-  <!-- <exec_depend>joint_trajectory_controller</exec_depend> -->
-  <!-- <exec_depend>gazebo_ros_control</exec_depend> -->
-  <exec_depend>arc_rover_autonomy</exec_depend>
-  <exec_depend>controller_manager</exec_depend>
   <exec_depend>moveit_configs_utils</exec_depend>
-  <exec_depend>moveit_ros_move_group</exec_depend>
   <exec_depend>moveit_ros_visualization</exec_depend>
   <exec_depend>moveit_ros_warehouse</exec_depend>
   <exec_depend>moveit_setup_assistant</exec_depend>
+
+  <!-- ros2_control and controllers -->
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>joint_trajectory_controller</exec_depend>
+  <exec_depend>joint_state_broadcaster</exec_depend>
+  <exec_depend>ros2_controllers</exec_depend>
+
+  <!-- Hardware plugins (conditional use via xacro args) -->
+  <exec_depend>gazebo_ros2_control</exec_depend>
+  <exec_depend>gazebo_ros_pkgs</exec_depend>
+
+  <!-- TF, state publishers, visualization -->
   <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>joint_state_publisher_gui</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
   <exec_depend>rviz2</exec_depend>
   <exec_depend>rviz_common</exec_depend>
   <exec_depend>rviz_default_plugins</exec_depend>
-  <exec_depend>tf2_ros</exec_depend>
-  <exec_depend>warehouse_ros_mongo</exec_depend>
+
+  <!-- URDF/Xacro processing -->
   <exec_depend>xacro</exec_depend>
 
+  <!-- Warehouse (saved planning scenes) -->
+  <exec_depend>warehouse_ros_mongo</exec_depend>
+
+  <!-- Ana otonom paket (mesh referanslari icin) -->
+  <exec_depend>arc_rover_autonomy</exec_depend>
 
   <export>
-      <build_type>ament_cmake</build_type>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>

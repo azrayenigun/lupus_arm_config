@@ -1,11 +1,11 @@
-# Default initial positions for LupusArm's ros2_control fake system
+# Default initial positions for LupusArm ros2_control
+# NOT: Gripper_Joint_2 MIMIC oldugu icin burada yok (Gripper_Joint_1'i izliyor)
 
 initial_positions:
-  Gripper_Joint_1: 0
-  Gripper_Joint_2: 0
-  Joint_1: 0
-  Joint_2: 0
-  Joint_3: 0
-  Joint_4: 0
-  Joint_5: 0
-  Joint_6: 0
+  Joint_1: 0.0
+  Joint_2: 0.0
+  Joint_3: 0.0
+  Joint_4: 0.0
+  Joint_5: 0.0
+  Joint_6: 0.0
+  Gripper_Joint_1: 0.0
