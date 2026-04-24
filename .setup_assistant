@@ -1,0 +1,25 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: arc_rover_autonomy
+    relative_path: urdf/lupus_arm.urdf
+  srdf:
+    relative_path: config/LupusArm.srdf
+  package_settings:
+    author_name: Azra YENİGÜN
+    author_email: yenigunazrakumsal@gmail.com
+    generated_timestamp: 1776590014
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
