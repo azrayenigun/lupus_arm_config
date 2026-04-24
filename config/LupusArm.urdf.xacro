@@ -1,14 +1,24 @@
 <?xml version="1.0"?>
+<!-- LupusArm Ana Xacro Dosyasi -->
+<!-- Bu dosya 3 parcayi birlestirir: kinematik, ros2_control, macro cagrisi -->
+<!-- Kullanim ornekleri: -->
+<!--   Gazebo  : xacro LupusArm.urdf.xacro use_sim:=true -->
+<!--   Mock HW : xacro LupusArm.urdf.xacro use_sim:=false use_fake_hardware:=true -->
+<!--   Gercek  : xacro LupusArm.urdf.xacro use_sim:=false use_fake_hardware:=false -->
+
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="LupusArm">
-    <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
 
-    <!-- Import LupusArm urdf file -->
-    <xacro:include filename="$(find arc_rover_autonomy)/urdf/lupus_arm.urdf" />
+  <xacro:arg name="use_sim" default="true"/>
+  <xacro:arg name="use_fake_hardware" default="false"/>
+  <xacro:arg name="initial_positions_file"
+             default="$(find lupus_arm_config)/config/initial_positions.yaml"/>
 
-    <!-- Import control_xacro -->
-    <xacro:include filename="LupusArm.ros2_control.xacro" />
+  <xacro:include filename="$(find lupus_arm_config)/config/lupus_arm_kinematics.xacro"/>
 
+  <xacro:include filename="$(find lupus_arm_config)/config/LupusArm.ros2_control.xacro"/>
 
-    <xacro:LupusArm_ros2_control name="FakeSystem" initial_positions_file="$(arg initial_positions_file)"/>
+  <xacro:LupusArm_ros2_control
+    name="LupusArmHardwareInterface"
+    initial_positions_file="$(arg initial_positions_file)"/>
 
 </robot>

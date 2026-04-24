@@ -1,70 +1,141 @@
 <?xml version="1.0"?>
+<!--
+  LupusArm ros2_control + Gazebo Plugin Tanımları
+  ================================================
+  Bu dosya 3 farklı senaryoyu destekler:
+  
+  1. Gazebo Simülasyonu          → use_sim:=true
+  2. Mock Hardware (test/RViz)   → use_sim:=false  use_fake_hardware:=true
+  3. Gerçek Robot                → use_sim:=false  use_fake_hardware:=false
+  
+  Argümanlar:
+  - use_sim: Gazebo Classic simülasyonunda mı çalışıyoruz?
+  - use_fake_hardware: Mock hardware kullanılsın mı? (sim:=false iken)
+  - initial_positions_file: Başlangıç eklem pozisyonları YAML dosyası
+  
+  Kullanım:
+  xacro LupusArm.urdf.xacro use_sim:=true
+  xacro LupusArm.urdf.xacro use_sim:=false use_fake_hardware:=true
+  xacro LupusArm.urdf.xacro use_sim:=false use_fake_hardware:=false
+-->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:macro name="LupusArm_ros2_control" params="name initial_positions_file">
-        <xacro:property name="initial_positions" value="${load_yaml(initial_positions_file)['initial_positions']}"/>
 
-        <ros2_control name="${name}" type="system">
-            <hardware>
-                <!-- By default, set up controllers for simulation. This won't work on real hardware -->
-                <plugin>mock_components/GenericSystem</plugin>
-            </hardware>
-            <joint name="Joint_1">
-                <command_interface name="position"/>
-                <state_interface name="position">
-                  <param name="initial_value">${initial_positions['Joint_1']}</param>
-                </state_interface>
-                <state_interface name="velocity"/>
-            </joint>
-            <joint name="Joint_2">
-                <command_interface name="position"/>
-                <state_interface name="position">
-                  <param name="initial_value">${initial_positions['Joint_2']}</param>
-                </state_interface>
-                <state_interface name="velocity"/>
-            </joint>
-            <joint name="Joint_3">
-                <command_interface name="position"/>
-                <state_interface name="position">
-                  <param name="initial_value">${initial_positions['Joint_3']}</param>
-                </state_interface>
-                <state_interface name="velocity"/>
-            </joint>
-            <joint name="Joint_4">
-                <command_interface name="position"/>
-                <state_interface name="position">
-                  <param name="initial_value">${initial_positions['Joint_4']}</param>
-                </state_interface>
-                <state_interface name="velocity"/>
-            </joint>
-            <joint name="Joint_5">
-                <command_interface name="position"/>
-                <state_interface name="position">
-                  <param name="initial_value">${initial_positions['Joint_5']}</param>
-                </state_interface>
-                <state_interface name="velocity"/>
-            </joint>
-            <joint name="Joint_6">
-                <command_interface name="position"/>
-                <state_interface name="position">
-                  <param name="initial_value">${initial_positions['Joint_6']}</param>
-                </state_interface>
-                <state_interface name="velocity"/>
-            </joint>
-            <joint name="Gripper_Joint_1">
-                <command_interface name="position"/>
-                <state_interface name="position">
-                  <param name="initial_value">${initial_positions['Gripper_Joint_1']}</param>
-                </state_interface>
-                <state_interface name="velocity"/>
-            </joint>
-            <joint name="Gripper_Joint_2">
-                <command_interface name="position"/>
-                <state_interface name="position">
-                  <param name="initial_value">${initial_positions['Gripper_Joint_2']}</param>
-                </state_interface>
-                <state_interface name="velocity"/>
-            </joint>
+  <!-- ============================================================ -->
+  <!-- ARGÜMANLAR                                                    -->
+  <!-- ============================================================ -->
+  <xacro:arg name="use_sim" default="true"/>
+  <xacro:arg name="use_fake_hardware" default="false"/>
+  <xacro:arg name="initial_positions_file" default="$(find lupus_arm_config)/config/initial_positions.yaml"/>
 
-        </ros2_control>
-    </xacro:macro>
+  <xacro:macro name="LupusArm_ros2_control" params="name initial_positions_file">
+
+    <!-- Başlangıç pozisyonlarını YAML'dan oku -->
+    <xacro:property name="initial_positions" value="${xacro.load_yaml(initial_positions_file)['initial_positions']}"/>
+
+    <ros2_control name="${name}" type="system">
+
+      <!-- =============================================== -->
+      <!-- HARDWARE INTERFACE (Plugin Seçimi)             -->
+      <!-- =============================================== -->
+      <hardware>
+        <xacro:if value="$(arg use_sim)">
+          <!-- GAZEBO MODU: gazebo_ros2_control plugin -->
+          <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+        </xacro:if>
+
+        <xacro:unless value="$(arg use_sim)">
+          <xacro:if value="$(arg use_fake_hardware)">
+            <!-- MOCK HARDWARE MODU: hardware bağlantısı yok, sahte joint state -->
+            <plugin>mock_components/GenericSystem</plugin>
+          </xacro:if>
+
+          <xacro:unless value="$(arg use_fake_hardware)">
+            <!-- GERÇEK ROBOT MODU: ileride yazılacak hardware interface -->
+            <!-- TODO: Gerçek motor driver'ı buraya eklenecek -->
+            <!-- Örn: <plugin>lupus_arm_hardware/LupusArmHardware</plugin> -->
+            <plugin>mock_components/GenericSystem</plugin>
+            <!-- ŞİMDİLİK: Gerçek hardware yokken mock kullanılıyor -->
+            <!-- Gerçek robot interface yazılınca yukarıdaki satır değişecek -->
+          </xacro:unless>
+        </xacro:unless>
+      </hardware>
+
+      <!-- =============================================== -->
+      <!-- KOL EKLEMLERİ (Joint_1 ... Joint_6)            -->
+      <!-- =============================================== -->
+      <joint name="Joint_1">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">${initial_positions['Joint_1']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="Joint_2">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">${initial_positions['Joint_2']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="Joint_3">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">${initial_positions['Joint_3']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="Joint_4">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">${initial_positions['Joint_4']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="Joint_5">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">${initial_positions['Joint_5']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="Joint_6">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">${initial_positions['Joint_6']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <!-- =============================================== -->
+      <!-- GRIPPER EKLEMİ (sadece Gripper_Joint_1)        -->
+      <!-- Gripper_Joint_2 mimic olduğu için BURADA YOK   -->
+      <!-- =============================================== -->
+      <joint name="Gripper_Joint_1">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">${initial_positions['Gripper_Joint_1']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+    </ros2_control>
+
+    <!-- ============================================================ -->
+    <!-- GAZEBO PLUGIN BLOĞU (sadece use_sim:=true iken aktif)         -->
+    <!-- ============================================================ -->
+    <xacro:if value="$(arg use_sim)">
+      <gazebo>
+        <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+          <parameters>$(find lupus_arm_config)/config/ros2_controllers.yaml</parameters>
+        </plugin>
+      </gazebo>
+    </xacro:if>
+
+  </xacro:macro>
+
 </robot>
