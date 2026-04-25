@@ -1,367 +1,298 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  LupusArm Kinematik Tanımı
-  ==========================
-  Bu dosya sadece robot kolun fiziksel/kinematik tanımını içerir:
-  - Linkler (gövde parçaları)
-  - Eklemler (joints) ve limitler
-  - Eylemsizlik (inertia) bilgileri
-  - Görsel mesh ve çarpışma geometrileri
-  
-  ros2_control ve Gazebo plugin tanımları AYRI dosyalarda (LupusArm.ros2_control.xacro).
-  Bu sayede aynı kinematik hem Gazebo, hem mock hardware, hem gerçek robot için kullanılır.
--->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="LupusArm">
 
-  <!-- ============================================================ -->
-  <!-- LINKLER                                                       -->
-  <!-- ============================================================ -->
+  <!--
+    LupusArm Kinematic Definition
+    =============================
+    Orijinal SolidWorks URDF Exporter ciktisi temel alindi.
+    Faz 1 iyilestirmeleri: mimic joint (B4), Joint 2/3 limitleri (B7).
+    Joint origin/axis degerleri SolidWorks kalibrasyonu - DEGISTIRMEYIN!
+  -->
 
   <link name="base_link">
     <inertial>
-      <origin xyz="3.0317E-12 -0.0078874 0.038799" rpy="0 0 0" />
-      <mass value="0.21246" />
-      <inertia ixx="0.00021564" ixy="-7.9173E-15" ixz="-2.7878E-15"
-               iyy="0.00021581" iyz="2.5701E-05"
-               izz="0.00038546" />
+      <origin xyz="1.3503E-17 1.6228E-17 0.0441" rpy="0 0 0" />
+      <mass value="8.522" />
+      <inertia ixx="0.0424" ixy="0" ixz="0" iyy="0.0424" iyz="0" izz="0.0773" />
     </inertial>
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/base_link.STL"
-              scale="0.001 0.001 0.001"/>
+        <mesh filename="package://arc_rover_autonomy/meshes/base_link.STL" />
       </geometry>
-      <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
-      </material>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/base_link.STL"
-              scale="0.001 0.001 0.001"/>
+        <mesh filename="package://arc_rover_autonomy/meshes/base_link.STL" />
       </geometry>
     </collision>
   </link>
-
-  <link name="Joint_1_Link">
-    <inertial>
-      <origin xyz="-9.4848E-08 -0.026788 0.046882" rpy="0 0 0" />
-      <mass value="0.30694" />
-      <inertia ixx="0.00069349" ixy="2.0353E-09" ixz="3.6028E-10"
-               iyy="0.00077178" iyz="-1.5408E-05"
-               izz="0.00045256" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Joint_1_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Joint_1_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <link name="Joint_2_Link">
-    <inertial>
-      <origin xyz="-3.7664E-09 0.16038 0.0084295" rpy="0 0 0" />
-      <mass value="0.4329" />
-      <inertia ixx="0.005077" ixy="1.6233E-10" ixz="-2.0716E-11"
-               iyy="0.00018875" iyz="-1.7202E-05"
-               izz="0.0050389" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Joint_2_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Joint_2_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <link name="Joint_3_Link">
-    <inertial>
-      <origin xyz="-1.4068E-09 0.10764 -0.011068" rpy="0 0 0" />
-      <mass value="0.18249" />
-      <inertia ixx="0.0010366" ixy="-2.4898E-11" ixz="-1.9181E-12"
-               iyy="0.00012326" iyz="6.5187E-06"
-               izz="0.00099691" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Joint_3_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Joint_3_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <link name="Joint_4_Link">
-    <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <mass value="0.05" />
-      <inertia ixx="1E-05" ixy="0" ixz="0"
-               iyy="1E-05" iyz="0"
-               izz="1E-05" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Joint_4_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Joint_4_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <link name="Joint_5_Link">
-    <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <mass value="0.05" />
-      <inertia ixx="1E-05" ixy="0" ixz="0"
-               iyy="1E-05" iyz="0"
-               izz="1E-05" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Joint_5_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Joint_5_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <link name="Joint_6_Link">
-    <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <mass value="0.05" />
-      <inertia ixx="1E-05" ixy="0" ixz="0"
-               iyy="1E-05" iyz="0"
-               izz="1E-05" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Joint_6_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Joint_6_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <link name="Gripper_Base_Link">
-    <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <mass value="0.05" />
-      <inertia ixx="1E-05" ixy="0" ixz="0"
-               iyy="1E-05" iyz="0"
-               izz="1E-05" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Gripper_Base_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Gripper_Base_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <link name="Gripper_Joint_1_Link">
-    <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <mass value="0.02" />
-      <inertia ixx="1E-06" ixy="0" ixz="0"
-               iyy="1E-06" iyz="0"
-               izz="1E-06" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Gripper_Joint_1_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
-      </material>
-    </visual>
-    <!-- B4: Gripper collision için basit kutu (mesh yerine) - performance için -->
-    <collision>
-      <origin xyz="0 0 0.015" rpy="0 0 0" />
-      <geometry>
-        <box size="0.015 0.025 0.04"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <link name="Gripper_Joint_2_Link">
-    <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <mass value="0.02" />
-      <inertia ixx="1E-06" ixy="0" ixz="0"
-               iyy="1E-06" iyz="0"
-               izz="1E-06" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://arc_rover_autonomy/meshes/Gripper_Joint_2_Link.STL"
-              scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0.015" rpy="0 0 0" />
-      <geometry>
-        <box size="0.015 0.025 0.04"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <!-- ============================================================ -->
-  <!-- EKLEMLER (JOINTS)                                             -->
-  <!-- ============================================================ -->
+  <gazebo reference="base_link">
+    <material>Gazebo/Blue</material>
+    <self_collide>true</self_collide>
+  </gazebo>
 
   <joint name="Joint_1" type="revolute">
-    <origin xyz="0 0 0.075" rpy="0 0 0" />
+    <origin xyz="0 0 0.1275" rpy="0 0 0" />
     <parent link="base_link" />
     <child link="Joint_1_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.14159" upper="3.14159" effort="40" velocity="10.5" />
+    <limit lower="0" upper="6.28" effort="40" velocity="10.5" />
   </joint>
+  <link name="Joint_1_Link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="3.549" />
+      <inertia ixx="0.009" ixy="0" ixz="0" iyy="0.008" iyz="0" izz="0.013" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Joint_1_Link.STL" />
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Joint_1_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="Joint_1_Link">
+    <material>Gazebo/DarkGrey</material>
+    <self_collide>true</self_collide>
+  </gazebo>
 
   <joint name="Joint_2" type="revolute">
-    <origin xyz="0 0 0.075" rpy="-1.5708 0 0" />
+    <origin xyz="0 0 0.06" rpy="1.5707 0 -3.1415" />
     <parent link="Joint_1_Link" />
     <child link="Joint_2_Link" />
-    <axis xyz="0 0 1" />
-    <!-- B7: Joint_2 limitleri daraltıldı (kol kendine çarpmasın) -->
+    <axis xyz="0 0 -1" />
+    <!-- B7: Joint_2 limitleri daraltildi (kol kendine carpmasin) -->
     <limit lower="-2.0" upper="2.0" effort="300" velocity="0.8" />
   </joint>
+  <link name="Joint_2_Link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="1.755" />
+      <inertia ixx="0.031" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.032" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Joint_2_Link.STL" />
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Joint_2_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="Joint_2_Link">
+    <material>Gazebo/Blue</material>
+    <self_collide>true</self_collide>
+  </gazebo>
 
   <joint name="Joint_3" type="revolute">
-    <origin xyz="0 0.35 0" rpy="0 0 0" />
+    <origin xyz="0 0.35 0.025" rpy="0 0 1.6446" />
     <parent link="Joint_2_Link" />
     <child link="Joint_3_Link" />
     <axis xyz="0 0 1" />
-    <!-- B7: Joint_3 limitleri daraltıldı -->
+    <!-- B7: Joint_3 limitleri daraltildi -->
     <limit lower="-2.0" upper="2.0" effort="300" velocity="0.8" />
   </joint>
+  <link name="Joint_3_Link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="3.073" />
+      <inertia ixx="0.032" ixy="0" ixz="0" iyy="0.006" iyz="0" izz="0.036" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Joint_3_Link.STL" />
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Joint_3_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="Joint_3_Link">
+    <material>Gazebo/Blue</material>
+    <self_collide>true</self_collide>
+  </gazebo>
 
   <joint name="Joint_4" type="revolute">
-    <origin xyz="0 0.33 -0.025" rpy="-1.5708 0 0" />
+    <origin xyz="-0.2383 -0.3323 0.075" rpy="0.0738 1.5707 0" />
     <parent link="Joint_3_Link" />
     <child link="Joint_4_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.14159" upper="3.14159" effort="6" velocity="3.5" />
+    <limit lower="0" upper="6.28" effort="6" velocity="3.5" />
   </joint>
+  <link name="Joint_4_Link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="1.845" />
+      <inertia ixx="0.002" ixy="0" ixz="0" iyy="0.004" iyz="0" izz="0.002" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Joint_4_Link.STL" />
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Joint_4_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="Joint_4_Link">
+    <material>Gazebo/DarkGrey</material>
+    <self_collide>true</self_collide>
+  </gazebo>
 
   <joint name="Joint_5" type="revolute">
-    <origin xyz="0 0 0.13" rpy="1.5708 0 0" />
+    <origin xyz="0 0 -0.15" rpy="1.5707 0 1.5707" />
     <parent link="Joint_4_Link" />
     <child link="Joint_5_Link" />
-    <axis xyz="0 0 1" />
-    <limit lower="-3.14159" upper="3.14159" effort="3.6" velocity="6.2" />
+    <axis xyz="0 0 -1" />
+    <limit lower="-6.28" upper="6.28" effort="3.6" velocity="6.2" />
   </joint>
+  <link name="Joint_5_Link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.050" />
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Joint_5_Link.STL" />
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Joint_5_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="Joint_5_Link">
+    <material>Gazebo/Grey</material>
+    <self_collide>true</self_collide>
+  </gazebo>
 
   <joint name="Joint_6" type="revolute">
-    <origin xyz="0 -0.07 0" rpy="-1.5708 0 0" />
+    <origin xyz="0 0 0" rpy="1.5707 -1.5707 0" />
     <parent link="Joint_5_Link" />
     <child link="Joint_6_Link" />
-    <axis xyz="0 0 1" />
-    <limit lower="-3.14159" upper="3.14159" effort="3.6" velocity="6.8" />
+    <axis xyz="0 0 -1" />
+    <limit lower="-6.28" upper="6.28" effort="3.6" velocity="6.8" />
   </joint>
+  <link name="Joint_6_Link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.237" />
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0002" iyz="0" izz="0.0002" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Joint_6_Link.STL" />
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Joint_6_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="Joint_6_Link">
+    <material>Gazebo/Grey</material>
+    <self_collide>true</self_collide>
+  </gazebo>
 
-  <joint name="Gripper_Mount" type="fixed">
-    <origin xyz="0 0 0.05" rpy="0 0 0" />
+  <joint name="Gripper_Base_joint" type="fixed">
+    <origin xyz="0 0 0.129" rpy="0 0 0" />
     <parent link="Joint_6_Link" />
     <child link="Gripper_Base_Link" />
   </joint>
+  <link name="Gripper_Base_Link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.540" />
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0018" iyz="0" izz="0.0017" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Gripper_Base_Link.STL" />
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Gripper_Base_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="Gripper_Base_Link">
+    <material>Gazebo/DarkGrey</material>
+    <self_collide>true</self_collide>
+  </gazebo>
 
   <joint name="Gripper_Joint_1" type="prismatic">
-    <origin xyz="-0.015 0 0.03" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
     <parent link="Gripper_Base_Link" />
     <child link="Gripper_Joint_1_Link" />
     <axis xyz="1 0 0" />
-    <limit lower="-0.05" upper="0.0" effort="3.5" velocity="2.52" />
+    <limit lower="-0.05" upper="0" effort="3.5" velocity="2.52" />
   </joint>
+  <link name="Gripper_Joint_1_Link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.1" />
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Gripper_Joint_1_Link.STL" />
+      </geometry>
+    </visual>
+    <!-- B4: Gripper collision basit kutu (mesh yerine) - performans icin -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.04 0.06" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="Gripper_Joint_1_Link">
+    <material>Gazebo/Grey</material>
+  </gazebo>
 
-  <!-- B4: Mimic joint - Gripper_Joint_2 her zaman Joint_1'in TERSİ olacak (paralel hareket) -->
+  <!-- B4: Mimic joint - Gripper_Joint_2 her zaman Joint_1'in TERSI olacak (paralel hareket) -->
   <joint name="Gripper_Joint_2" type="prismatic">
-    <origin xyz="0.015 0 0.03" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
     <parent link="Gripper_Base_Link" />
     <child link="Gripper_Joint_2_Link" />
     <axis xyz="1 0 0" />
-    <limit lower="0.0" upper="0.05" effort="3.5" velocity="2.5" />
+    <limit lower="0" upper="0.05" effort="3.5" velocity="2.5" />
     <mimic joint="Gripper_Joint_1" multiplier="-1" offset="0"/>
   </joint>
+  <link name="Gripper_Joint_2_Link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.1" />
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://arc_rover_autonomy/meshes/Gripper_Joint_2_Link.STL" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.04 0.06" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="Gripper_Joint_2_Link">
+    <material>Gazebo/Grey</material>
+  </gazebo>
 
 </robot>

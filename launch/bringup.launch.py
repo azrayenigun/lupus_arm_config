@@ -1,0 +1,180 @@
+"""
+LupusArm Bringup Launch
+=======================
+Robot kolu RViz veya Gazebo'da calistirir.
+"""
+
+import os
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument, RegisterEventHandler
+from launch.conditions import IfCondition, UnlessCondition
+from launch.event_handlers import OnProcessExit
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
+from launch_ros.substitutions import FindPackageShare
+from moveit_configs_utils import MoveItConfigsBuilder
+
+
+def generate_launch_description():
+
+    use_sim = LaunchConfiguration('use_sim')
+    use_rviz = LaunchConfiguration('use_rviz')
+    use_moveit = LaunchConfiguration('use_moveit')
+
+    declare_use_sim = DeclareLaunchArgument(
+        'use_sim', default_value='false',
+        description='Gazebo simulasyonu kullan'
+    )
+    declare_use_fake_hardware = DeclareLaunchArgument(
+        'use_fake_hardware', default_value='true',
+        description='Mock hardware kullan'
+    )
+    declare_use_rviz = DeclareLaunchArgument(
+        'use_rviz', default_value='true',
+        description='RViz2 ac'
+    )
+    declare_use_moveit = DeclareLaunchArgument(
+        'use_moveit', default_value='true',
+        description='MoveIt move_group baslat'
+    )
+
+    moveit_config = (
+        MoveItConfigsBuilder("LupusArm", package_name="lupus_arm_config")
+        .robot_description(
+            file_path="config/LupusArm.urdf.xacro",
+            mappings={
+                "use_sim": "false",
+                "use_fake_hardware": "true",
+            }
+        )
+        .robot_description_semantic(file_path="config/LupusArm.srdf")
+        .trajectory_execution(file_path="config/moveit_controllers.yaml")
+        .planning_pipelines(pipelines=["ompl"])
+        .to_moveit_configs()
+    )
+
+    # Static TF: world -> base_link (virtual_joint karsilik)
+    static_tf_node = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        name="static_world_to_base",
+        output="log",
+        arguments=["--frame-id", "world", "--child-frame-id", "base_link"],
+    )
+
+    robot_state_publisher_node = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        name="robot_state_publisher",
+        output="screen",
+        parameters=[
+            moveit_config.robot_description,
+            {"use_sim_time": False},
+        ],
+    )
+
+    ros2_controllers_path = os.path.join(
+        FindPackageShare('lupus_arm_config').find('lupus_arm_config'),
+        'config',
+        'ros2_controllers.yaml',
+    )
+
+    ros2_control_node = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[
+            moveit_config.robot_description,
+            ros2_controllers_path,
+        ],
+        output="screen",
+        condition=UnlessCondition(use_sim),
+    )
+
+    joint_state_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "joint_state_broadcaster",
+            "--controller-manager", "/controller_manager",
+            "--remap", "/joint_states:=/joint_state_broadcaster/joint_states",
+        ],
+        output="screen",
+    )
+
+    arm_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["arm_controller", "--controller-manager", "/controller_manager"],
+        output="screen",
+    )
+
+    gripper_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["gripper_controller", "--controller-manager", "/controller_manager"],
+        output="screen",
+    )
+
+    delay_arm_after_jsb = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=joint_state_broadcaster_spawner,
+            on_exit=[arm_controller_spawner, gripper_controller_spawner],
+        )
+    )
+
+    move_group_node = Node(
+        package="moveit_ros_move_group",
+        executable="move_group",
+        output="screen",
+        parameters=[moveit_config.to_dict()],
+        condition=IfCondition(use_moveit),
+    )
+    joint_state_publisher_node = Node(
+        package="joint_state_publisher",
+        executable="joint_state_publisher",
+        name="joint_state_publisher",
+        output="log",
+        parameters=[
+            moveit_config.robot_description,
+            {
+                "source_list": ["joint_state_broadcaster/joint_states"],
+                "rate": 50,
+            },
+        ],
+    )
+
+    rviz_config_file = os.path.join(
+        FindPackageShare('lupus_arm_config').find('lupus_arm_config'),
+        'config',
+        'moveit.rviz',
+    )
+
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        output="log",
+        arguments=["-d", rviz_config_file],
+        parameters=[
+            moveit_config.robot_description,
+            moveit_config.robot_description_semantic,
+            moveit_config.planning_pipelines,
+            moveit_config.robot_description_kinematics,
+        ],
+        condition=IfCondition(use_rviz),
+    )
+
+    return LaunchDescription([
+        declare_use_sim,
+        declare_use_fake_hardware,
+        declare_use_rviz,
+        declare_use_moveit,
+        static_tf_node,
+        robot_state_publisher_node,
+        ros2_control_node,
+        joint_state_broadcaster_spawner,
+        delay_arm_after_jsb,
+        joint_state_publisher_node,
+        move_group_node,
+        rviz_node,
+    ])
