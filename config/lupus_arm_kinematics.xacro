@@ -9,6 +9,15 @@
     Joint origin/axis degerleri SolidWorks kalibrasyonu - DEGISTIRMEYIN!
   -->
 
+<!-- World linki ve fixed joint - Gazebo'da robotu sabitlemek icin -->
+  <link name="world"/>
+
+  <joint name="world_to_base" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
   <link name="base_link">
     <inertial>
       <origin xyz="1.3503E-17 1.6228E-17 0.0441" rpy="0 0 0" />

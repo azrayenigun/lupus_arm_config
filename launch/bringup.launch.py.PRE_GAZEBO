@@ -7,15 +7,13 @@ Robot kolu RViz veya Gazebo'da calistirir.
 import os
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, RegisterEventHandler
-from launch.actions import IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.conditions import IfCondition, UnlessCondition
-from launch.event_handlers import OnProcessExit, OnProcessStart
+from launch.event_handlers import OnProcessExit
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from moveit_configs_utils import MoveItConfigsBuilder
-import xacro
+
 
 def generate_launch_description():
 
@@ -40,79 +38,19 @@ def generate_launch_description():
         description='MoveIt move_group baslat'
     )
 
-# Launch context'inden argumanlari al (sys.argv'den)
-    import sys
-    sim_arg = "false"
-    fake_hw_arg = "true"
-    for arg in sys.argv:
-        if arg.startswith("use_sim:="):
-            sim_arg = arg.split(":=")[1].lower()
-        elif arg.startswith("use_fake_hardware:="):
-            fake_hw_arg = arg.split(":=")[1].lower()
-
-    # Eger Gazebo modu ise mock hardware'i otomatik kapat
-    if sim_arg == "true":
-        fake_hw_arg = "false"
-
-# Gazebo modu icin URDF'i xacro ile direkt isle (string olarak)
-    urdf_xacro_path = os.path.join(
-        FindPackageShare('lupus_arm_config').find('lupus_arm_config'),
-        'config',
-        'LupusArm.urdf.xacro',
-    )
-    doc = xacro.process_file(
-        urdf_xacro_path,
-        mappings={
-            "use_sim": sim_arg,
-            "use_fake_hardware": fake_hw_arg,
-        }
-    )
-    robot_desc_string = doc.toxml()
-
     moveit_config = (
         MoveItConfigsBuilder("LupusArm", package_name="lupus_arm_config")
         .robot_description(
             file_path="config/LupusArm.urdf.xacro",
             mappings={
-                "use_sim": sim_arg,
-                "use_fake_hardware": fake_hw_arg,
+                "use_sim": "false",
+                "use_fake_hardware": "true",
             }
         )
         .robot_description_semantic(file_path="config/LupusArm.srdf")
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .planning_pipelines(pipelines=["ompl"])
         .to_moveit_configs()
-    )
-# =========================================================================
-    # GAZEBO (sadece use_sim:=true iken aktif)
-    # =========================================================================
-    world_path = os.path.join(
-        FindPackageShare('lupus_arm_config').find('lupus_arm_config'),
-        'worlds',
-        'empty_lupus.world',
-    )
-
-    gazebo_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            os.path.join(
-                FindPackageShare('gazebo_ros').find('gazebo_ros'),
-                'launch',
-                'gazebo.launch.py',
-            )
-        ]),
-        launch_arguments={'world': world_path, 'verbose': 'true'}.items(),
-        condition=IfCondition(use_sim),
-    )
-
-    spawn_robot = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
-        arguments=[
-            '-topic', 'robot_description',
-            '-entity', 'lupus_arm',
-        ],
-        output='screen',
-        condition=IfCondition(use_sim),
     )
 
     # Static TF: world -> base_link (virtual_joint karsilik)
@@ -122,7 +60,6 @@ def generate_launch_description():
         name="static_world_to_base",
         output="log",
         arguments=["--frame-id", "world", "--child-frame-id", "base_link"],
-        condition=UnlessCondition(use_sim),
     )
 
     robot_state_publisher_node = Node(
@@ -131,8 +68,8 @@ def generate_launch_description():
         name="robot_state_publisher",
         output="screen",
         parameters=[
-            {"robot_description": robot_desc_string},
-            {"use_sim_time": True},
+            moveit_config.robot_description,
+            {"use_sim_time": False},
         ],
     )
 
@@ -159,7 +96,6 @@ def generate_launch_description():
         arguments=[
             "joint_state_broadcaster",
             "--controller-manager", "/controller_manager",
-            "--controller-manager-timeout", "60",
         ],
         output="screen",
     )
@@ -218,8 +154,6 @@ def generate_launch_description():
         declare_use_fake_hardware,
         declare_use_rviz,
         declare_use_moveit,
-        gazebo_launch,
-        spawn_robot,
         static_tf_node,
         robot_state_publisher_node,
         ros2_control_node,
