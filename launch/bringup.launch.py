@@ -96,7 +96,6 @@ def generate_launch_description():
         arguments=[
             "joint_state_broadcaster",
             "--controller-manager", "/controller_manager",
-            "--remap", "/joint_states:=/joint_state_broadcaster/joint_states",
         ],
         output="screen",
     )
@@ -129,20 +128,6 @@ def generate_launch_description():
         parameters=[moveit_config.to_dict()],
         condition=IfCondition(use_moveit),
     )
-    joint_state_publisher_node = Node(
-        package="joint_state_publisher",
-        executable="joint_state_publisher",
-        name="joint_state_publisher",
-        output="log",
-        parameters=[
-            moveit_config.robot_description,
-            {
-                "source_list": ["joint_state_broadcaster/joint_states"],
-                "rate": 50,
-            },
-        ],
-    )
-
     rviz_config_file = os.path.join(
         FindPackageShare('lupus_arm_config').find('lupus_arm_config'),
         'config',
@@ -174,7 +159,6 @@ def generate_launch_description():
         ros2_control_node,
         joint_state_broadcaster_spawner,
         delay_arm_after_jsb,
-        joint_state_publisher_node,
         move_group_node,
         rviz_node,
     ])
