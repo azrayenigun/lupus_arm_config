@@ -1,14 +1,19 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="LupusArm">
     <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
+    <xacro:arg name="use_gazebo" default="false" />
 
-    <!-- Import LupusArm urdf file -->
+    <!-- Robot geometrisi (URDF kendi içinde Gazebo bloklarını barındırır) -->
     <xacro:include filename="$(find arc_rover_autonomy)/urdf/lupus_arm.urdf" />
 
-    <!-- Import control_xacro -->
-    <xacro:include filename="LupusArm.ros2_control.xacro" />
-
-
-    <xacro:LupusArm_ros2_control name="FakeSystem" initial_positions_file="$(arg initial_positions_file)"/>
+    <!-- ros2_control sadece RViz demo (mock) için ekleniyor.
+         Gazebo durumunda lupus_arm.urdf'in kendi <ros2_control> bloğu kullanılır. -->
+    <xacro:unless value="$(arg use_gazebo)">
+        <xacro:include filename="LupusArm.ros2_control.xacro" />
+        <xacro:LupusArm_ros2_control 
+            name="FakeSystem" 
+            initial_positions_file="$(arg initial_positions_file)"
+            use_gazebo="false"/>
+    </xacro:unless>
 
 </robot>
